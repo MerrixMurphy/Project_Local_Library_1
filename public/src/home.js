@@ -1,72 +1,79 @@
 function getTotalBooksCount(books) {
+  // return a total count of all books.
   return books.reduce((acc) => {
     return acc + 1;
   }, 0);
 }
 
 function getTotalAccountsCount(accounts) {
+  // return a total count of all accounts.
   return accounts.reduce((acc) => {
     return acc + 1;
   }, 0);
 }
 
 function getBooksBorrowedCount(books) {
+  // filter through the books to check and return an array with each book borrowed.
   const bookCount = books.filter((book) => {
     const status = book.borrows[0].returned;
     if (!status) {
       return book;
     }
   });
+  // return the length of the filtered array to see how many books were checked out.
   return bookCount.length;
 }
 
-function getMostCommonGenres(books) {
-  let unorganizedGenres = {};
-  const unsortedGenres = [];
-  const bookGenres = books.map((book) => book.genre);
-  bookGenres.forEach((genre) => {
-    unorganizedGenres[genre] = (unorganizedGenres[genre] || 0) + 1;
-  });
-  function organize() {
-    const genreKeys = Object.keys(unorganizedGenres);
-    const genreValues = Object.values(unorganizedGenres);
-    for (let key in genreKeys) {
-      let organizedGenres = {};
-      organizedGenres["name"] = genreKeys[key];
-      organizedGenres["count"] = genreValues[key];
-      unsortedGenres.push(organizedGenres);
-    }
+//function to
+function sorter(impKey, impVal) {
+  // constant to hold objs with name key and count val var.
+  const unsorted = [];
+  // for loop to push the key and val var into an object with proper keys and push into the obj holder.
+  for (let key in impKey) {
+    let organized = {};
+    organized["name"] = impKey[key];
+    organized["count"] = impVal[key];
+    unsorted.push(organized);
   }
-  organize();
-  const sortGenres = unsortedGenres.sort((genreA, genreB) => {
-    return genreA.count < genreB.count ? 1 : -1;
+  // sort through the obj holder to organize by most to least of the var.
+  const sort = unsorted.sort((sortA, sortB) => {
+    return sortA.count < sortB.count ? 1 : -1;
   });
-  return sortGenres.splice(0, 5);
+  // return the first 5 results of the sorted obj.
+  return sort.splice(0, 5);
+}
+
+function getMostCommonGenres(books) {
+  // var to hold common genres, a var for the keys of the common genre, and for the vals.
+  let unorganizedGenres = {};
+  let genreKeys = [];
+  let genreValues = [];
+  // a var for a map of the books genre.
+  const bookGenres = books.map((book) => book.genre);
+  // count all of the duplicate genres and make an obj containing them and the count.
+  bookGenres.forEach((genre) => {
+    return (unorganizedGenres[genre] = (unorganizedGenres[genre] || 0) + 1);
+  });
+  // reassign the empty var with the correct information
+  genreKeys = Object.keys(unorganizedGenres);
+  genreValues = Object.values(unorganizedGenres);
+  //take the key and val produced by the count and run them through the function.
+  return sorter(genreKeys, genreValues);
 }
 
 function getMostPopularBooks(books) {
-  const unsortedPop = [];
+  // constants to hold the mapped titles and the borrow length of each book.
   const bookTit = books.map((book) => book.title);
   const bookPop = books.map((book) => book.borrows.length);
-  function organize() {
-    for (let pop in bookPop) {
-      let organizedPop = {};
-      organizedPop["name"] = bookTit[pop];
-      organizedPop["count"] = bookPop[pop];
-      unsortedPop.push(organizedPop);
-    }
-  }
-  organize();
-  const sortPop = unsortedPop.sort((popA, popB) => {
-    return popA.count < popB.count ? 1 : -1;
-  });
-  return sortPop.splice(0, 5);
+  //take the key and val produced by the count and run them through the function.
+  return sorter(bookTit, bookPop);
 }
 
 function getMostPopularAuthors(books, authors) {
-  const unsortedAuth = [];
+  // constants to hold the mapped author ids from each book and each books borrowed length.
   const bookAuth = books.map((book) => book.authorId);
   const bookPop = books.map((book) => book.borrows.length);
+  // a map for the author ids to to find the matching author and then returning the authors first and last name.
   const changeToAuth = bookAuth.map((auth) => {
     for (let indivAuth in authors) {
       const author = authors[indivAuth];
@@ -76,19 +83,8 @@ function getMostPopularAuthors(books, authors) {
       }
     }
   });
-  function organize() {
-    for (let auth in changeToAuth) {
-      let organizedAuth = {};
-      organizedAuth["name"] = changeToAuth[auth];
-      organizedAuth["count"] = bookPop[auth];
-      unsortedAuth.push(organizedAuth);
-    }
-  }
-  organize();
-  const sortAuth = unsortedAuth.sort((authA, authB) => {
-    return authA.count < authB.count ? 1 : -1;
-  });
-  return sortAuth.splice(0, 5);
+  //take the key and val produced by the count and run them through the function.
+  return sorter(changeToAuth, bookPop);
 }
 
 module.exports = {
