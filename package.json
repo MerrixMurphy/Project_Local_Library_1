@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "start": "live-server public/"
+    "start": "live-server"
   },
   "keywords": [],
   "author": "",
