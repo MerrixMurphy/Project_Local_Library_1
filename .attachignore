@@ -4,3 +4,4 @@ test/books.test.js
 test/fixtures/books.fixture.js
 test/fixtures/accounts.fixture.js
 test/accounts.test.js
+/node_modules
